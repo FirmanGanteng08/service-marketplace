@@ -16,7 +16,6 @@
         </div>
 
         <div class="flex-1 px-4 py-6 overflow-y-auto">
-            
             <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 px-4">Menu Dashboard</div>
 
             <nav class="space-y-1">
@@ -39,14 +38,14 @@
                     </a>
                 @endif
 
-                <a href="#" class="flex items-center px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-blue-600 rounded-xl font-medium transition-colors">
+                <a href="{{ route('wallet.index') }}" class="flex items-center px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-blue-600 rounded-xl font-medium transition-colors">
                     <span class="mr-3">💳</span> Saldo & Transaksi
                 </a>
             </nav>
         </div>
 
         <div class="p-6 border-t border-gray-100 shrink-0">
-            <a href="{{ route('home') }}" class="flex items-center text-gray-500 hover:text-blue-600 font-semibold transition-colors">
+            <a href="{{ route('home') }}" class="flex items-center text-gray-500 hover:text-blue-600 font-semibold transition-colors text-sm">
                 &larr; Kembali ke Beranda
             </a>
         </div>
@@ -54,11 +53,8 @@
 
     <main class="flex-1 flex flex-col h-screen">
         
-        <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-8 relative z-50">
-            <h2 class="text-xl font-bold text-gray-800 hidden sm:block">
-                Halo, {{ auth()->user()->name }}! 👋
-            </h2>
-            
+        <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-8 relative z-50 shrink-0">
+            <h2 class="text-xl font-bold text-gray-800 hidden sm:block">Halo, {{ auth()->user()->name }}! 👋</h2>
             <h2 class="text-xl font-bold text-blue-600 sm:hidden">JasaQu</h2>
 
             <div class="flex items-center space-x-4 ml-auto">
@@ -67,7 +63,7 @@
                 </span>
                 
                 <div class="relative inline-block text-left" id="dashboardDropdown">
-                    <button type="button" class="flex items-center focus:outline-none" onclick="toggleDashDropdown()">
+                    <button type="button" class="flex items-center focus:outline-none" onclick="document.getElementById('dashDropdownMenu').classList.toggle('hidden');">
                         <div class="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-extrabold border-2 border-white shadow-sm hover:ring-2 hover:ring-blue-300 transition cursor-pointer">
                             {{ substr(auth()->user()->name, 0, 1) }}
                         </div>
@@ -77,7 +73,6 @@
                         <a href="{{ route('profile.edit') }}" class="flex items-center px-5 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium transition">
                             <span class="mr-3">⚙️</span> Detail Profil
                         </a>
-                        
                         <form method="POST" action="{{ route('logout') }}" class="border-t border-gray-50 mt-2 pt-2">
                             @csrf
                             <button type="submit" class="w-full flex items-center px-5 py-2.5 text-sm text-red-600 hover:bg-red-50 font-bold transition text-left">
@@ -86,25 +81,17 @@
                         </form>
                     </div>
                 </div>
-
-                <script>
-                    function toggleDashDropdown() {
-                        document.getElementById('dashDropdownMenu').classList.toggle('hidden');
-                    }
-                    window.onclick = function(event) {
-                        if (!event.target.closest('#dashboardDropdown')) {
-                            var dropdown = document.getElementById('dashDropdownMenu');
-                            if (!dropdown.classList.contains('hidden')) {
-                                dropdown.classList.add('hidden');
-                            }
-                        }
-                    }
-                </script>
             </div>
         </header>
 
         <div class="flex-1 p-8 overflow-y-auto">
             
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-8 flex items-center shadow-sm">
+                    <span class="mr-2 text-xl">🎉</span> {{ session('success') }}
+                </div>
+            @endif
+
             @if(auth()->user()->role !== 'super_admin')
             <div class="bg-blue-600 rounded-2xl p-8 text-white shadow-lg shadow-blue-200 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] relative overflow-hidden">
                 <div class="relative z-10 mb-4 md:mb-0">
@@ -112,19 +99,11 @@
                     <p class="text-4xl font-extrabold tracking-tight">Rp{{ number_format(auth()->user()->wallet->balance ?? 0, 0, ',', '.') }}</p>
                 </div>
                 <div class="relative z-10">
-                    @if(auth()->user()->role === 'user')
-                        <button class="bg-white text-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-gray-50 transition shadow-sm w-full md:w-auto">Top Up Saldo</button>
-                    @elseif(auth()->user()->role === 'provider')
-                        <button class="bg-white text-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-gray-50 transition shadow-sm w-full md:w-auto">Tarik Dana</button>
-                    @endif
+                    <a href="{{ route('wallet.index') }}" class="inline-block bg-white text-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-gray-50 transition shadow-sm text-center">
+                        {{ auth()->user()->role === 'user' ? 'Top Up Saldo' : 'Tarik Dana' }}
+                    </a>
                 </div>
             </div>
-            @endif
-
-            @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-8 flex items-center shadow-sm">
-                    <span class="mr-2 text-xl">🎉</span> {{ session('success') }}
-                </div>
             @endif
 
             @if(auth()->user()->role === 'provider')

@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceController; // Tambahkan ini
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -27,6 +28,9 @@ Route::middleware('auth')->group(function () {
     // Rute untuk proses pemesanan (Checkout)
     Route::get('/checkout/{service}/{package}', [OrderController::class, 'checkout'])->name('checkout');
     Route::post('/checkout/{service}/{package}', [OrderController::class, 'process'])->name('checkout.process');
+    // Rute Saldo & Top Up
+    Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');
+    Route::post('/wallet/topup', [WalletController::class, 'topup'])->name('wallet.topup');
 });
 
 require __DIR__.'/auth.php';

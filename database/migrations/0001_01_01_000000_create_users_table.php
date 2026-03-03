@@ -17,16 +17,35 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            
+            // ROLE & STATUS (Sangat Penting untuk Marketplace)
+            $table->enum('role', ['super_admin', 'provider', 'user'])->default('user');
+            $table->enum('status', ['active', 'suspended'])->default('active');
+            
+            // DATA PROFIL TAMBAHAN
+            $table->string('phone', 20)->nullable()->unique();
+            $table->string('avatar')->nullable();
+            $table->text('address')->nullable();
+            
+            // AUDIT TRAIL (Untuk melacak aktivitas login)
+            $table->timestamp('last_login_at')->nullable();
+            $table->string('last_login_ip')->nullable();
+
             $table->rememberToken();
             $table->timestamps();
+            
+            // SOFT DELETES: Data tidak benar-benar terhapus (Aman untuk relasi transaksi)
+            $table->softDeletes();
         });
 
+        // Tabel bawaan Laravel untuk reset password
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
 
+        // Tabel bawaan Laravel untuk sesi login
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
